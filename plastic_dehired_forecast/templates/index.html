@@ -1,103 +1,70 @@
 <!DOCTYPE html>
-<html >
-<!--From https://codepen.io/frytyler/pen/EGdtg-->
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ML API</title>
-  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
-<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  
+  <title>Plastic Pallet Dehire Forecast</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
- <div class="login">
-	<h1>Dehired Quantity Prediction of Plastic Pallets for Top 10 Customers</h1>
+  <div class="container fade-in">
+    <div class="form-box">
+      <div class="header">
+        <div class="logo-circle" title="Forecast App">📦</div>
+        <h1>Dehire Forecast for Top 10 Customers</h1>
+        <p>Select details to predict dehired pallet quantity</p>
+      </div>
+      <form action="{{ url_for('predict')}}" method="post">
+        <label for="Customer/Vendor Name" class="hover-label">Customer Name</label>
+        <select id="Customer/Vendor Name" name="Customer/Vendor Name" required>
+          <option disabled selected>Select a customer</option>
+          <option value="0">Ashoka Pvt Ltd _ Pantnagar</option>
+          <option value="1">BRAC INDIA PRIVATE LIMITED _ Bawal</option>
+          <option value="2">BRAC India PVT LTD _ Sanand</option>
+          <option value="3">Daimler _DC_ Chennai</option>
+          <option value="4">GARG PVT Ltd _ Gurgaon_Manesar</option>
+          <option value="5">Maha AM Ltd Zaheerabad FD</option>
+          <option value="6">Maha AM Ltd _Nagpur</option>
+          <option value="7">Swara L Ltd _ Mohali</option>
+          <option value="8">TMO Limited Sanand _ Ahmedabad</option>
+          <option value="9">TMO Ltd _ Jamshedpur</option>
+        </select>
 
-   <form action="{{ url_for('predict')}}"method="post">
-	<label for="Customer/Vendor Name">customername</label>
-	<select id="Customer/Vendor Name" name="Customer/Vendor Name">
-	<option value="0">Ashoka Pvt Ltd _ Pantnagar</option>
-	<option value="1">BRAC INDIA PRIVATE LIMITED _ Bawal</option>	
-	<option value="2">BRAC India PVT LTD _ Sanand</option>
-	<option value="3">Daimler _DC_ Chennai</option>
-	<option value="4">GARG PVT Ltd _ Gurgaon_Manesar</option>
-	<option value="5">Maha AM Ltd Zaheerabad FD</option>
-	<option value="6">Maha AM Ltd _Nagpur</option>
-	<option value="7">Swara L Ltd _ Mohali</option>
-	<option value="8">TMO Limited Sanand _ Ahmedabad</option>
-	<option value="9">TMO Ltd _ Jamshedpur</option>
-	</select>
-	<br>
-	<label for="Year">year</label>
-	<select id="Year" name="Year">
-	<option value="2022">2022</option>
-	<option value="2023">2023</option>	
-	<option value="2024">2024</option>
-	<option value="2025">2025</option>
-	</select>
-	<br>
-	<label for="Month">month</label>
-	<select id="Month" name="Month">
-	<option value="1">January</option>
-	<option value="2">February</option>	
-	<option value="3">March</option>
-	<option value="4">April</option>
-	<option value="5">May</option>
-	<option value="6">June</option>	
-	<option value="7">July</option>
-	<option value="8">August</option>
-	<option value="9">September</option>
-	<option value="10">October</option>	
-	<option value="11">November</option>
-	<option value="12">December</option>
-	</select>	
-	<br>
-	<label for="Day">day</label>
-	<select id="Day" name="Day">
-	<option value="1">01</option>
-	<option value="2">02</option>	
-	<option value="3">03</option>
-	<option value="4">04</option>
-	<option value="5">05</option>
-	<option value="6">06</option>	
-	<option value="7">07</option>
-	<option value="8">08</option>
-	<option value="9">09</option>
-	<option value="10">10</option>	
-	<option value="11">11</option>
-	<option value="12">12</option>
-	<option value="13">13</option>
-	<option value="14">14</option>	
-	<option value="15">15</option>
-	<option value="16">16</option>
-	<option value="17">17</option>
-	<option value="18">18</option>	
-	<option value="19">19</option>
-	<option value="20">20</option>
-	<option value="21">21</option>
-	<option value="22">22</option>	
-	<option value="23">23</option>
-	<option value="24">24</option>
-	<option value="25">25</option>
-	<option value="26">26</option>
-	<option value="27">27</option>	
-	<option value="28">28</option>
-	<option value="29">29</option>
-	<option value="30">30</option>
-	<option value="31">31</option>	
-	</select>	
-	<br>
-	<button type="submit" class="btn btn-primary btn-block btn-large">Submit</button>
-   </form>
+        <label for="Year" class="hover-label">Year</label>
+        <select id="Year" name="Year" required>
+          <option value="2022">2022</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          <option value="2025">2025</option>
+        </select>
 
-  <br>
-  <br>
-  {{ prediction_text }}
+        <label for="Month" class="hover-label">Month</label>
+        <select id="Month" name="Month" required>
+          {% for m in range(1,13) %}
+            <option value="{{ m }}">{{ ["January", "February", "March", "April", "May", "June", 
+                                        "July", "August", "September", "October", "November", "December"][m-1] }}</option>
+          {% endfor %}
+        </select>
 
- </div>
+        <label for="Day" class="hover-label">Day</label>
+        <select id="Day" name="Day" required>
+          {% for d in range(1, 32) %}
+            <option value="{{ d }}">{{ "{:02d}".format(d) }}</option>
+          {% endfor %}
+        </select>
 
+        <button type="submit" class="submit-btn">Predict Dehire</button>
+      </form>
+
+      {% if prediction_text %}
+        <div class="result bounce">
+          <h2>Prediction:</h2>
+          <p>{{ prediction_text }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
 </body>
 </html>
