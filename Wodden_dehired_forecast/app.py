@@ -1,31 +1,87 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb  4 13:56:27 2023
-
-@author: God
-"""
-
+import os
 import numpy as np
-from flask import Flask, request, render_template
 import pickle
+from flask import Flask, request, render_template
 
+# -------------------------------
+# App Initialization
+# -------------------------------
 app = Flask(__name__)
-model = pickle.load(open('model1.pkl', 'rb'))
 
-@app.route('/')
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model1.pkl")
+
+# Load model safely
+def load_model(path):
+    try:
+        with open(path, "rb") as f:
+            return pickle.load(f)
+    except Exception as e:
+        raise RuntimeError(f"Model loading failed: {e}")
+
+model = load_model(MODEL_PATH)
+
+# -------------------------------
+# Utility Functions
+# -------------------------------
+def validate_input(form_data):
+    """
+    Validate incoming form data
+    """
+    try:
+        values = [float(x) for x in form_data.values()]
+        if len(values) != 4:
+            raise ValueError("Expected 4 input features")
+        return values, None
+    except Exception as e:
+        return None, str(e)
+
+
+def prepare_features(values):
+    """
+    Convert input into model-ready format
+    """
+    return np.array(values).reshape(1, -1)
+
+
+def predict_quantity(features):
+    """
+    Model prediction wrapper
+    """
+    prediction = model.predict(features)
+    return round(float(prediction[0]), 2)
+
+
+# -------------------------------
+# Routes
+# -------------------------------
+@app.route("/")
 def home():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@app.route('/predict',methods=['POST'])
+
+@app.route("/predict", methods=["POST"])
 def predict():
-    '''
-    For rendering results on HTML GUI
-    '''
-    float_features = [float(x) for x in request.form.values()]
-    final_features = [np.array(float_features)]
-    prediction = model.predict(final_features)
+    values, error = validate_input(request.form)
 
-    return render_template('index.html', prediction_text='Forecasted Quantity is {}'.format(prediction))
+    if error:
+        return render_template(
+            "index.html",
+            prediction_text=f"❌ Error: {error}"
+        )
 
+    features = prepare_features(values)
+    result = predict_quantity(features)
+
+    return render_template(
+        "index.html",
+        prediction_text=f"✅ Forecasted Quantity: {result}"
+    )
+
+
+# -------------------------------
+# Run App
+# -------------------------------
 if __name__ == "__main__":
-    app.run(debug=True, use_reloader=False)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=True, port=port, use_reloader=False)
