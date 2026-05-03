@@ -38,11 +38,11 @@ jobs:
     - name: Basic prediction smoke test
       run: |
         python - <<EOF
-import numpy as np
-import pickle
-
-# simple test for one model
-model = pickle.load(open('Wodden_allot_forecast/model1.pkl','rb'))
-pred = model.predict(np.array([[1,2024,5,10]]))
-print("Prediction OK:", pred)
-EOF
+        import numpy as np
+        import pickle
+        
+        # simple test for one model
+        model = pickle.load(open('Wodden_allot_forecast/model1.pkl','rb'))
+        pred = model.predict(np.array([[1,2024,5,10]]))
+        print("Prediction OK:", pred)
+        EOF
