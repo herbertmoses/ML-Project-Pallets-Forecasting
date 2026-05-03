@@ -1,0 +1,48 @@
+name: Python CI - Pallet Forecast Apps
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Import validation
+      run: |
+        python -c "import flask, numpy, sklearn"
+
+    - name: App import test (all services)
+      run: |
+        python -c "import Wodden_allot_forecast.app"
+        python -c "import Wodden_dehired_forecast.app"
+        python -c "import plastic_allot_forecast.app"
+        python -c "import plastic_dehired_forecast.app"
+
+    - name: Basic prediction smoke test
+      run: |
+        python - <<EOF
+import numpy as np
+import pickle
+
+# simple test for one model
+model = pickle.load(open('Wodden_allot_forecast/model1.pkl','rb'))
+pred = model.predict(np.array([[1,2024,5,10]]))
+print("Prediction OK:", pred)
+EOF
